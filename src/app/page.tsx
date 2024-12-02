@@ -11,7 +11,7 @@ type TD = {
 };
 type TData = TD[] | undefined;
 
-export default function Home(props: any) {
+export default function Home() {
   const [data, setData] = useState<TData>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const onFormSubmit = async (formData: FormData) => {
