@@ -22,7 +22,7 @@ export default function Home() {
     setIsProcessing(true);
     while (!isDone) {
       console.log(isDone, page);
-      let query = `?page=${page}`;
+      const query = `?page=${page}`;
       const result = await getPages(url, query);
       const totalPages = result?.totalPages as string;
 
