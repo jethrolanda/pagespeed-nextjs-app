@@ -3,36 +3,36 @@
 import { revalidatePath } from "next/cache";
 import { Dispatch, SetStateAction } from "react";
 
-export async function lighthouse(
-  formData: FormData,
-  setData: Dispatch<SetStateAction<{}>>
-) {
-  const url = formData.get("url") as string;
-  let page = 1;
-  let isDone = false;
+// export async function lighthouse(
+//   formData: FormData,
+//   setData: Dispatch<SetStateAction<{}>>
+// ) {
+//   const url = formData.get("url") as string;
+//   let page = 1;
+//   let isDone = false;
 
-  while (!isDone) {
-    console.log(isDone, page);
-    let params = `?page=${page}`;
-    const result = await getPages(url, params);
-    const totalPages = result?.response?.headers.get(
-      "x-wp-totalpages"
-    ) as string;
+//   while (!isDone) {
+//     console.log(isDone, page);
+//     let params = `?page=${page}`;
+//     const result = await getPages(url, params);
+//     const totalPages = result?.response?.headers.get(
+//       "x-wp-totalpages"
+//     ) as string;
 
-    const scores = await pageSpeed(result?.urls);
-    setData((prev) => ({
-      ...prev,
-      scores
-    }));
-    revalidatePath("/");
-    console.log(scores);
-    if (page < parseInt(totalPages)) {
-      page += 1;
-    } else {
-      isDone = true;
-    }
-  }
-}
+//     const scores = await pageSpeed(result?.urls);
+//     setData((prev) => ({
+//       ...prev,
+//       scores
+//     }));
+//     revalidatePath("/");
+//     console.log(scores);
+//     if (page < parseInt(totalPages)) {
+//       page += 1;
+//     } else {
+//       isDone = true;
+//     }
+//   }
+// }
 
 export async function pageSpeed(urls: string[]) {
   try {
@@ -56,7 +56,9 @@ export async function pageSpeed(urls: string[]) {
     });
 
     return await Promise.all(promises);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function getPages(url: string, params: string) {
@@ -70,7 +72,12 @@ export async function getPages(url: string, params: string) {
     const data = await response.json();
     const urls = data.map((page: any) => page.link);
 
-    return { response, urls };
+    return {
+      totalPages: response?.headers.get("x-wp-totalpages") as string,
+      urls
+    };
+
+    // return { response, urls };
   } catch (error) {
     console.error(error);
   }
