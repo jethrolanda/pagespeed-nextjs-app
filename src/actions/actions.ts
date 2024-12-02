@@ -67,8 +67,7 @@ export async function getPages(url: string, params: string) {
     }
 
     const data = await response.json();
-    // eslint-disable-next-line no-unused-vars
-    const urls = data.map((page: any) => page?.link);
+    const urls = data.map((page: any) => page?.link); // eslint-disable-line no-use-before-define
 
     return {
       totalPages: response?.headers.get("x-wp-totalpages") as string,
