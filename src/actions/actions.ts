@@ -1,8 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { Dispatch, SetStateAction } from "react";
-
 // export async function lighthouse(
 //   formData: FormData,
 //   setData: Dispatch<SetStateAction<{}>>
