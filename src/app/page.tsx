@@ -1,5 +1,6 @@
 "use client";
 import { getPages, pageSpeed } from "@/actions/actions";
+import SubmitButton from "@/components/SubmitButton";
 import { useState } from "react";
 
 type TD = {
@@ -13,32 +14,36 @@ type TData = TD[] | undefined;
 
 export default function Home() {
   const [data, setData] = useState<TData>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
+
   const onFormSubmit = async (formData: FormData) => {
     // await lighthouse(formData, setData);
     const url = formData.get("url") as string;
     let page = 1;
     let isDone = false;
-    setIsProcessing(true);
-    while (!isDone) {
-      console.log(isDone, page);
-      const query = `?page=${page}`;
-      const result = await getPages(url, query);
-      const totalPages = result?.totalPages as string;
 
-      const scores = await pageSpeed(result?.urls);
-      setData((prev) => [...(prev as []), ...(scores as [])]);
+    try {
+      while (!isDone) {
+        console.log(isDone, page);
+        const query = `?page=${page}`;
+        const result = await getPages(url, query);
+        const totalPages = result?.totalPages as string;
 
-      console.log(typeof scores, scores);
-      if (page < parseInt(totalPages)) {
-        page += 1;
-      } else {
-        isDone = true;
-        setIsProcessing(false);
+        const scores = await pageSpeed(result?.urls);
+        setData((prev) => [...(prev as []), ...(scores as [])]);
+
+        console.log(typeof scores, scores);
+        if (page < parseInt(totalPages)) {
+          page += 1;
+        } else {
+          isDone = true;
+        }
       }
+    } catch (error) {
+      console.log(error);
+    } finally {
     }
   };
-  console.log(isProcessing);
+
   return (
     <div className="flex min-h-screen flex-col items-center bg-slate-200 text-xl p-10">
       <h1 className="text-4xl pb-10 font-extrabold">Pagespeed App</h1>
@@ -50,9 +55,7 @@ export default function Home() {
             className="border rounded-md p-2"
             name="url"
           />
-          <button className="border bg-blue-900 color text-white p-4 rounded-md text-sm font-semibold uppercase hover:bg-sky-700">
-            {isProcessing ? `Processing...` : "Submit"}
-          </button>
+          <SubmitButton />
         </form>
 
         {data !== undefined && data.length > 0 && (
